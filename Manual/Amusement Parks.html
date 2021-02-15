@@ -33,12 +33,12 @@
                 <span class="page-header-section-title">Amusement Parks</span>
             </div>
             <div class="page-content">
-                <img src="img/Component/Module Name.svg" class="diagram">
+                <img src="img/Component/Amusement Parks.svg" class="diagram">
                 <h2>On the Subject of Amusement Parks</h2>
                 <p class="flavour-text">RMC KTANE Confirmed?!</p>
 
                 <p>Congratulations! Thanks to extortionate pricing and underpaid staff, your amusement park has reported record profits! Your task is to decide what type of attraction to invest your profits in for next season.</p>
-				<p>The name of your amusement park is displayed in a banner at the top of the module. The screen at the bottom of the module can be cycled using the arrow keys to show a collection of attractions currently available for purchase.</p>
+				<p>The name of your amusement park is displayed in a banner at the top of the module. The screen at the bottom of the module can be cycled using the arrow keys to show the three attractions currently available for purchase.</p>
 				<p>You should base your decision on the desires of three fans of the park who have been consulted, as well as any restrictions which apply to your specific park. Follow the steps below to determine the most suitable attraction to install, and select the screen while it is displayed to disarm the module. Selecting an unsuitable attraction will cause a strike.</p>
 
                 <h3>Deciding which Fans to Consult</h3>
@@ -46,8 +46,8 @@
 				<div>
 				<img src="img/namewheel.svg" style="float: right;">
 				<ul>                
-				<li>Take the number of batteries on the bomb, modulo&ast; 8 plus 1. Starting from James, move that many times clockwise around the wheel. The name you land on is the first fan to consult.</li>
-					<li>Take the sum of all digits in the bomb's serial number, modulo&ast; 7 plus 1. Move that many times clockwise around the wheel, starting from your previously-selected fan to obtain your second fan. Repeat to obtain the third fan to consult.</li>
+				<li>Take the number of batteries on the bomb, modulo 8 plus 1. The first fan to consult is the fan whose bio number (see below) is this number.</li>
+					<li>Take the sum of all digits in the bomb's serial number, modulo 7 plus 1. Move that many times clockwise around the wheel, starting from your previously-selected fan to obtain your second fan. Repeat to obtain the third fan to consult.</li>
 					<li>If you land on a fan you have already selected, move one space further clockwise and use that fan instead.</li>
 				</ul>
 				</div>
@@ -62,7 +62,7 @@
             </div>
             <div class="page-content">
                 <h3>Using your Fans' Preferences</h3>
-				<p>Each of your chosen three fans has their preferences listed in their bio below. Use these, alongside the statistics for attractions shown in the attractions directory, to assign a point to available attractions for every individual preference of any of your three fans they meet. For each fan, if the sum of the bomb's serial number digits modulo&ast; the fan's bio number = 0, multiply all points assigned by that fan by the number of port plates on the bomb.</p>
+				<p>Each of your chosen three fans has their preferences listed in their bio below. Using these, alongside the statistics for attractions shown in the attractions directory, assign each attraction a single point for each fan preference that matches one of its statistics. For each fan, if the sum of the bomb's serial number digits modulo the fan's bio number = 0, multiply all points assigned by that fan by the number of port plates on the bomb.</p>
 				<div class="bio-col">
 				<h4>Bio 1: James</h4>
 				<div class="bio">
@@ -301,7 +301,7 @@
 					<tr>
 						<th>Dismay World</th>
 						<td>N/A</td>
-						<td>As our visitors are mostly young, no high thrill rides may be installed.</td>
+						<td>As our visitors are mostly young, no rides intended exclusively for adults may be installed.</td>
 					</tr>
 					<tr>
 						<th>Six Drags</th>
@@ -319,6 +319,7 @@
 						<td>As we're so low on space, no Roller Coasters can be installed.</td>
 					</tr>
 				</table>
+				<p>If all attractions are forbidden, proceed as if none of them are forbidden.</p>
 				<p>Your final answer is the attraction available on the module with the highest number of points which is not forbidden by a park restriction. If there are multiple such attractions, submit the one which comes first alphabetically.</p>
 			</div>
             <div class="page-footer relative-footer">Page 4 of 4</div>

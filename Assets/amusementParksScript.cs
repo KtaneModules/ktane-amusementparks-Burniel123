@@ -1,50 +1,35 @@
 ﻿using System;
-using System.Globalization; 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 
-public class doubleListeningScript : MonoBehaviour 
+public class amusementParksScript : MonoBehaviour 
 {
-
-	//Audio, bomb, and rule seed info:
 	public KMAudio Audio;
 	public KMBombInfo Bomb;
-	public KMRuleSeedable RuleSeed;
 
 	//Module components:
-	public KMSelectable[] upArrows;
-	public KMSelectable[] downArrows;
-	public KMSelectable playButton;
-	public KMSelectable submitButton;
-	public Renderer[] bitDisplays;
-	public AudioSource sound1;
-	public AudioSource sound2;
-
-	//Module resources:
-	public AudioClip[] sounds;
-	public String[] soundNames = new String[] {"Arcade","Ballpoint Pen Writing","Beach","Book Page Turning","Car Engine","Casino","Censorship Bleep","Chainsaw","Compressed Air","Cow","Dialup Internet","Door Closing","Extractor Fan","Firework Exploding","Glass Shattering","Helicopter","Marimba","Medieval Weapons","Oboe","Phone Ringing","Police Radio Scanner",
-	"Rattling Iron Chain","Reloading Glock 19","Saxophone","Servo Motor","Sewing Machine","Soccer Match","Squeaky Toy","Supermarket","Table Tennis","Tawny Owl","Taxi Dispatch","Tearing Fabric","Throat Singing","Thrush Nightingale","Tibetan Nuns","Train Station","Tuba","Vacuum Cleaner","Waterfall","Zipper"};
-	private Dictionary<String, String> listeningCodes = new Dictionary<String, String>()
-	{
-		{"Taxi Dispatch","&&&**"},{"Cow","&$#$&"},{"Extractor Fan","$#$*&"},{"Train Station","#$$**"},{"Arcade","$#$#*"},{"Casino","**$*#"},{"Supermarket","#$$&*"},{"Soccer Match","##*$*"},{"Tawny Owl","$#*$&"},{"Sewing Machine","#&&*#"},{"Thrush Nightingale","**#**"},{"Car Engine","&#**&"},{"Reloading Glock 19","$&**#"},{"Oboe","&#$$#"},
-		{"Saxophone","$&&**"},{"Tuba","#&$##"},{"Marimba","&*$*$"},{"Phone Ringing","&$$&*"},{"Tibetan Nuns","#&&&&"},{"Throat Singing","**$$$"},{"Beach","*&*&&"},{"Dialup Internet","*#&*&"},{"Police Radio Scanner","**###"},{"Censorship Bleep","&&$&*"},{"Medieval Weapons","&$**&"},{"Door Closing","#$#&$"},{"Chainsaw","&#&&#"},
-		{"Compressed Air","$$*$*"},{"Servo Motor","$&#$$"},{"Waterfall","&**$$"},{"Tearing Fabric","$&&*&"},{"Zipper","&$&##"},{"Vacuum Cleaner","#&$*&"},{"Ballpoint Pen Writing","$*$**"},{"Rattling Iron Chain","*#$&&"},{"Book Page Turning","###&$"},{"Table Tennis","*$$&$"},{"Squeaky Toy","$*&##"},{"Helicopter","#&$&&"},{"Firework Exploding","$&$$*"},{"Glass Shattering","*$*$*"}
-	};
-	//For rule seed:
-	String[] IndicatorNames = {"BOB", "CAR", "CLR", "FRK", "FRQ", "IND", "MSA", "NSA", "SIG", "SND", "TRN"};
-	Port[] Ports = {Port.Parallel, Port.Serial, Port.PS2, Port.RJ45, Port.DVI, Port.StereoRCA};
-	String[] PortNames = {"Parallel", "Serial", "PS/2", "RJ-45", "DVI-D", "Stereo RCA"};
+	public KMSelectable leftButton;
+	public KMSelectable rightButton;
+	public KMSelectable rideScreen;
+	public Renderer banner;
 
 	//Key module variables:
 	private bool moduleSolved = false;
-	String solution = null;
-	bool soundsPlaying = false;
-	int[] soundPositions;
-	Condition[] conditions;
+	private String[] parkNames = {"Cruelton Towers", "Dismay World", "Six Drags", "Cheddar Point", "Global Studios", "Fuji-Q ByeLand", "Trollywood"};
+	private Fan[] fans = new Fan[] {new Fan("James", 3, 4, RideType.Water, 1), new Fan("Dan", 4, 3, RideType.RollerCoaster, 2), new Fan("Karen", 2, 4, RideType.LargeFlat, 3), new Fan("Susan", 2, 4, RideType.LargeFlat, 1),
+									new Fan("Jessica", 4, 3, RideType.LargeFlat, 1), new Fan("Stephen", 2, 2, RideType.RollerCoaster, 2), new Fan("Matt", 1, 1, RideType.Water, 2), new Fan("Sarah", 3, 2, RideType.Dark, 3)};
+	private Ride[] rides = new Ride[] {new Ride("Carousel", 1, new int[] {1}, RideType.SmallFlat, 2), new Ride("Drop Tower", 4, new int[] {4}, RideType.SmallFlat, 0), new Ride("Enterprise", 4, new int[] {4}, RideType.LargeFlat, 0), new Ride("Ferris Wheel", 2, new int[] {1,2,3,4}, RideType.LargeFlat, 1), new Ride("Ghost Train", 3, new int[] {3}, RideType.Dark, 3),
+									   new Ride("Walkthrough", 1, new int[] {2}, RideType.Other, 2), new Ride("Inverted Coaster", 4, new int[] {4}, RideType.RollerCoaster, 2), new Ride("Junior Coaster", 2, new int[] {2}, RideType.RollerCoaster, 1), new Ride("Launched Coaster", 4, new int[] {3}, RideType.RollerCoaster, 0), new Ride("Log Flume", 2, new int[] {2}, RideType.Water, 2),
+									   new Ride("Omnimover", 2, new int[] {1}, RideType.Dark, 3), new Ride("Pirate Ship", 4, new int[] {2}, RideType.LargeFlat, 2), new Ride("River Rapids", 3, new int[] {1,2,3,4}, RideType.Water, 3), new Ride("Safari", 3, new int[] {1,2,3,4}, RideType.Other, 1), new Ride("Star Flyer", 4, new int[] {3}, RideType.LargeFlat, 0),
+									   new Ride("Top Spin", 4, new int[] {3}, RideType.LargeFlat, 2), new Ride("Tourbillon", 4, new int[] {3}, RideType.LargeFlat, 1), new Ride("Vintage Cars", 1, new int[] {1}, RideType.Other, 3), new Ride("Wooden Coaster", 3, new int[] {1,2,3,4}, RideType.RollerCoaster, 1)};
+
+	private Ride[] ridesAvailable = new Ride[4];
+	private String park = null;
+	private int cycleIndex = 0;
+	Ride correctInvestment = null;
 
 	//Logging variables:
 	static int moduleIdCounter = 1;
@@ -54,310 +39,218 @@ public class doubleListeningScript : MonoBehaviour
 	void Awake()
 	{
 		moduleId = moduleIdCounter++;
-
-		KMSelectable pb = playButton;
-		pb.OnInteract += delegate(){PressPlay(); return false;};
-
-		KMSelectable submit = submitButton;
-		submit.OnInteract += delegate(){PressSubmit(); return false;};
-
-		for(int i = 0; i < upArrows.Length; i++)
-		{
-			int j = i;
-			upArrows[i].OnInteract += delegate(){PressUp(j); return false;};
-		}
-		for(int i = 0; i < downArrows.Length; i++)
-		{
-			int j = i;
-			downArrows[i].OnInteract += delegate(){PressDown(j); return false;};
-		}
+		
+		leftButton.OnInteract += delegate(){PressLeft(); return false;};
+		rightButton.OnInteract += delegate(){PressRight(); return false;};
+		rideScreen.OnInteract += delegate(){PressSubmit(); return false;};
 	}
 
 	//Initialize module.
 	void Start() 
-	{
-		var rnd = RuleSeed.GetRNG();
-
-		if(rnd.Seed == 1)
-			conditions = null;
-		else
-		{
-			conditions = new Condition[3];
-			int[] conditionIndicesUsed = new int[3];
-			for(int i = 0; i < 3; i++)
-			{
-				int condIndex = -1;
-				while(condIndex == -1 || conditionIndicesUsed.Contains(condIndex))
-					condIndex = rnd.Next(7);
-			
-				var condType = (ConditionType)condIndex;
-				conditionIndicesUsed[i] = condIndex;
-				int parameter;
-
-				if(condIndex < 2)
-					parameter = rnd.Next(11);
-				else
-					parameter = rnd.Next(6);
-
-				if(i == 0)
-				{
-					int[] sounds = new int[2];
-					sounds[0] = rnd.Next(41);
-					sounds[1] = -1;
-					while(sounds[1] == -1 || sounds[1] == sounds[0])
-						sounds[1] = rnd.Next(41);
-					conditions[i] = new Condition{Type = condType, ConditionParam = parameter, Sounds = sounds};
-				}
-				else
-				{
-					conditions[i] = new Condition{Type = condType, ConditionParam = parameter};
-				}
-			}
-
-		}
-
-		soundPositions = Enumerable.Range(0, 41).ToList().Shuffle().Take(2).ToArray();
-		Debug.LogFormat("[Double Listening #{0}] The chosen sounds are \"{1}\" and \"{2}\".", moduleId, soundNames[soundPositions[0]], soundNames[soundPositions[1]]);
-		String listeningCode1 = listeningCodes[soundNames[soundPositions[0]]];
-		String listeningCode2 = listeningCodes[soundNames[soundPositions[1]]];
-		Debug.LogFormat("[Double Listening #{0}] The listening code for \"{1}\" is {2}", moduleId, soundNames[soundPositions[0]], listeningCode1);
-		Debug.LogFormat("[Double Listening #{0}] The listening code for \"{1}\" is {2}", moduleId, soundNames[soundPositions[1]], listeningCode2);
-		solution = CalculateSolution(listeningCode1,listeningCode2);
-		Debug.LogFormat("[Double Listening #{0}] Solution: {1}.", moduleId, solution);
-	}
-
-	//Given two listening codes, calculates a String of binary to input to solve the module.
-	String CalculateSolution(String symbols1, String symbols2)
 	{	
-		int rowNum = DetermineTableRowNum();
-		int[] mappings = new int[4];
-		switch(rowNum)
-		{
-			case 0 :
-			mappings = new int[] {0,0,1,1};break;
-			case 1 :
-			mappings = new int[] {0,1,0,1};break;
-			case 2 :
-			mappings = new int[] {1,0,1,0};break;
-			case 3 :
-			mappings = new int[] {1,1,0,0};break;
-		}
-		
-		String binary1 = ObtainBinaryOperand(symbols1, mappings);
-		String binary2 = ObtainBinaryOperand(symbols2, mappings);
-		Debug.LogFormat("[Double Listening #{0}] The binary code for \"{1}\" is {2}.", moduleId, symbols1, binary1);
-		Debug.LogFormat("[Double Listening #{0}] The binary code for \"{1}\" is {2}.", moduleId, symbols2, binary2);
-
-		return BitwiseXor(binary1, binary2);
+		int parkIndex = Enumerable.Range(0, 7).ToList().Shuffle()[0];
+		park = parkNames[parkIndex];
+		banner.GetComponentInChildren<TextMesh>().text = park;
+		ridesAvailable = (new List<Ride>(rides)).Shuffle().Take(3).ToArray();
+		Debug.LogFormat("[Amusement Parks #{0}] Welcome to {1}! It's time to decide what to invest in for next season!", moduleId, park);
+		Debug.LogFormat("[Amusement Parks #{0}] The rides available for purchase are: {1}, {2}, {3}.", moduleId, ridesAvailable[0].name, ridesAvailable[1].name, ridesAvailable[2].name);
+		rideScreen.GetComponentInChildren<TextMesh>().text = ridesAvailable[cycleIndex].name;
+		Fan[] toConsult = DetermineFans();
+		CalculatePoints(toConsult, ridesAvailable);
+		correctInvestment = DetermineRide(park, ridesAvailable);
+		Debug.LogFormat("[Amusement Parks #{0}] You should invest in the {1}.", moduleId, correctInvestment.name);
 	}
 
-	//Performs edgework lookups to determine which row of the table (0-3, top to bottom) to use.
-	int DetermineTableRowNum()
+	private Fan[] DetermineFans()
 	{
-		String listeningName1 = soundNames[soundPositions[0]];
-		String listeningName2 = soundNames[soundPositions[1]];
-		if(conditions == null)
-		{
-			if(Bomb.GetBatteryCount() >= 3 && (listeningName1.Equals("Beach") || listeningName1.Equals("Waterfall") || listeningName2.Equals("Beach") || listeningName2.Equals("Waterfall")))
-			{
-				Debug.LogFormat("[Double Listening #{0}] Using table row 1: \"If the bomb has at least 3 batteries and at least one of the sounds was Beach or Waterfall\".", moduleId);
-				return 0;
-			}	
-			foreach(var plate in Bomb.GetPortPlates())
-			{
-				if(plate.Count() == 0)
-				{
-					Debug.LogFormat("[Double Listening #{0}] Using table row 2: \"Otherwise, if the bomb has an empty port plate\".", moduleId);
-					return 1;
-				}
-			}
-			if(int.Parse(Bomb.GetSerialNumber().Substring(5,1)) % 2 == 1)
-			{
-				Debug.LogFormat("[Double Listening #{0}] Using table row 3: \"Otherwise, if the last digit of the bomb's serial number is odd\".", moduleId);
-				return 2;
-			}
-			Debug.LogFormat("[Double Listening #{0}] Using table row 4: \"Otherwise\".", moduleId);
-			return 3;
-		}
+		int pos1 = Bomb.GetBatteryCount() % 8;
+		int pos2 = (pos1 + (Bomb.GetSerialNumberNumbers().Sum() % 7) + 1) % 8;
+		int pos3 = (pos2 + (Bomb.GetSerialNumberNumbers().Sum() % 7) + 1) % 8;
+
+		while(pos3 == pos1 || pos3 == pos2)
+			pos3 = (pos3 + 1) % 8;
+
+		Debug.LogFormat("[Amusement Parks #{0}] You should consult {1}, {2}, and {3}.", moduleId, fans[pos1].name, fans[pos2].name, fans[pos3].name);
+		return new Fan[] {fans[pos1], fans[pos2], fans[pos3]};
+	}
+
+	private Ride[] CalculatePoints(Fan[] fans, Ride[] rides)
+	{
+		int serialNumSum = Bomb.GetSerialNumberNumbers().Sum();
+		int numPlates = Bomb.GetPortPlates().Count();
+
+		for(int i = 0; i < rides.Length; i++)
+			rides[i].points = 0;
+
 		for(int i = 0; i < 3; i++)
-		{
-			if(i == 0 && !conditions[i].Sounds.Contains(soundPositions[0]) && !conditions[i].Sounds.Contains(soundPositions[1]))
-				continue;
+		{//Iterate each fan.
+			int bioNumber = (new List<Fan>(this.fans)).IndexOf(fans[i]) + 1;
+			
+			int addAmt = serialNumSum % bioNumber == 0 ? numPlates : 1;
+			int pointsAdded = 0;
 
-			switch(conditions[i].Type)
+			if(serialNumSum % bioNumber == 0)
 			{
-				case ConditionType.LitIndicator:
-					if(Bomb.IsIndicatorOn(IndicatorNames[conditions[i].ConditionParam]))
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb has a lit {3} indicator{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", IndicatorNames[conditions[i].ConditionParam], 
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
-				case ConditionType.UnlitIndicator:
-					if(Bomb.IsIndicatorOff(IndicatorNames[conditions[i].ConditionParam]))
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb has an unlit {3} indicator{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", IndicatorNames[conditions[i].ConditionParam],
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
-				case ConditionType.Port:
-					if(Bomb.GetPortCount(Ports[conditions[i].ConditionParam]) > 0)
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb has a {3} port{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", PortNames[conditions[i].ConditionParam],
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
-				case ConditionType.EmptyPlate:
-					foreach(var plate in Bomb.GetPortPlates())
-						if(plate.Count() == 0)
-						{
-							Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb has an empty port plate{3}\".", 
-							moduleId, i+1, (i == 0) ? "I" : "Otherwise, i",
-							(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-							return i;
-						}
-					break;
-				case ConditionType.BatteryCount:
-					if(Bomb.GetBatteryCount() >= (conditions[i].ConditionParam % 3) + 2)
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb has at least {3} batteries{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", (conditions[i].ConditionParam % 3) + 2,
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
-				case ConditionType.SerialParity:
-					if((Bomb.GetSerialNumberNumbers().Last() % 2) == (conditions[i].ConditionParam % 2))
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the last digit of the bomb's serial number is {3}{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", (conditions[i].ConditionParam % 2 == 0) ? "even" : "odd",
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
-				case ConditionType.SerialVowel:
-					bool containsVowel = Bomb.GetSerialNumberLetters().Any(x => x == 'A' || x == 'E' || x == 'I' || x == 'O' || x == 'U');
-					if((containsVowel && conditions[i].ConditionParam % 2 == 1) || (!containsVowel && conditions[i].ConditionParam % 2 == 0))
-					{
-						Debug.LogFormat("[Double Listening #{0}] Using table row {1}: \"{2}f the bomb's serial number {3} a vowel{4}\".", 
-						moduleId, i+1, (i == 0) ? "I" : "Otherwise, i", (conditions[i].ConditionParam % 2 == 0) ? "does not contain" : "contains",
-						(i==0) ? (" and at least one of the sounds was " + listeningName1 + " or " + listeningName2) : "");
-						return i;
-					}
-					break;
+				addAmt = numPlates;
+				Debug.LogFormat("[Amusement Parks #{0}] Serial digits rule applies for {1}!", moduleId, fans[i].name);
+			}
+
+			for(int j = 0; j < rides.Length; j++)
+			{
+				pointsAdded = 0;
+				if(rides[j].thrillLevel == fans[i].prefThrill) {rides[j].points += addAmt; pointsAdded += addAmt;}
+				if(Array.Exists(rides[j].suitableAges, e => e == fans[i].ageGroup)) {rides[j].points += addAmt; pointsAdded += addAmt;}
+				if(rides[j].type == fans[i].prefType) {rides[j].points += addAmt; pointsAdded += addAmt;}
+				if(rides[j].scenery == fans[i].prefScenery) {rides[j].points += addAmt; pointsAdded += addAmt;}
+				Debug.LogFormat("[Amusement Parks #{0}] {1} gives {2} points to the {3}.", moduleId, fans[i].name, pointsAdded, rides[j].name);
 			}
 		}
-		Debug.LogFormat("[Double Listening #{0}] Using table row 4: \"Otherwise\".", moduleId);
-		return 3;
 
-	}
-
-	//Maps a String of listening characters to a String of binary.
-	String ObtainBinaryOperand(String symbols, int[] mappings)
-	{
-		String binary = "";
-
-		foreach(char c in symbols)
-		{
-			if(c == '#') binary += mappings[0].ToString();
-			else if(c == '$') binary += mappings[1].ToString();
-			else if(c == '&') binary += mappings[2].ToString();
-			else binary += mappings[3].ToString();
-		}
-
-		return binary;
-	}
-
-	//Performs a simple bitwise XOR on strings (using this over a library method because 5 bits is awkward).
-	String BitwiseXor(String op1, String op2)
-	{
-		String result = "";
-		for(int i = 0; i < op1.Length; i++)
-		{
-			if(op1[i] != op2[i]) result += "1";
-			else result += "0";
-		}
-
-		return result;
-	}
-
-	//Process the user pressing the "play" button.
-	void PressPlay()
-	{
-		if(moduleSolved || soundsPlaying)
-			return;
-
-		StartCoroutine(PlaySounds(soundPositions));
-	}
-
-	//Respond to the user pressing an up arrow by changing that bit to a 1 (regardless of its current value).
-	void PressUp(int arrowNum)
-	{
-		if(moduleSolved)
-			return;
-
-		bitDisplays[arrowNum].GetComponentInChildren<TextMesh>().text = "1\n";
-		upArrows[arrowNum].AddInteractionPunch(0.5f);
-		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-	}
-
-	//Respond to the user pressing a down arrow by changing that bit to a 0 (regardless of its current value).
-	void PressDown(int arrowNum)
-	{
-		if(moduleSolved)
-			return;
+		for(int i = 0; i < rides.Length; i++)
+			Debug.LogFormat("[Amusement Parks #{0}] Total points for {1}: {2}.", moduleId, rides[i].name, rides[i].points);
 		
-		bitDisplays[arrowNum].GetComponentInChildren<TextMesh>().text = "0\n";
-		downArrows[arrowNum].AddInteractionPunch(0.5f);
-		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+		return rides;
 	}
 
-	void PressSubmit()
+	private Ride DetermineRide(String park, Ride[] rides)
 	{
-		if(moduleSolved)
-			return;
-		submitButton.AddInteractionPunch(0.5f);
-		String answerSubmitted = "";
-		foreach(Renderer bit in bitDisplays)
+		Ride[] sorted = (new List<Ride>(rides)).OrderBy(r => r.points).ThenByDescending(r => r.name).Reverse().ToArray(); //TODO alphabetical on ties.
+
+		if(park.Equals("Cruelton Towers"))
 		{
-			answerSubmitted += (bit.GetComponentInChildren<TextMesh>().text)[0];
+			for(int i = 0; i < sorted.Length; i++)
+				if(!(new String[] {"Drop Tower", "Ferris Wheel", "Star Flyer"}).Contains(sorted[i].name))
+					return sorted[i];
+				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
+		}
+		
+		if(park.Equals("Dismay World"))
+		{
+			for(int i = 0; i < sorted.Length; i++)
+				if(!sorted[i].suitableAges.Equals(new int[] {4}))
+					return sorted[i];
+				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
 		}
 
-		Debug.LogFormat("[Double Listening #{0}] You submitted {1}.", moduleId, answerSubmitted);
+		if(park.Equals("Six Drags") && (Bomb.GetPortCount() >= 6 || Bomb.GetBatteryCount() >= 6))
+		{
+			for(int i = 0; i < sorted.Length; i++)
+				if(sorted[i].scenery != 3)
+					return sorted[i];
+				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
+		}
 
-		if(answerSubmitted.Equals(solution))
+		if(park.Equals("Cheddar Point") && (Bomb.GetSerialNumberLetters().Any(x => x == 'F' || x == 'A' || x == 'I' || x == 'R')))
 		{
-			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
-			Debug.LogFormat("[Double Listening #{0}] Module solved.", moduleId);
-			GetComponent<KMBombModule>().HandlePass();
-			moduleSolved = true;
+			for(int i = 0; i < sorted.Length; i++)
+				if(!(new String[] {"Safari", "Log Flume"}).Contains(sorted[i].name))
+					return sorted[i];
+				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
 		}
-		else
+
+		if(park.Equals("Not Berry Farm"))
 		{
-			Debug.LogFormat("[Double Listening #{0}] That was incorrect. Strike!", moduleId);
-			GetComponent<KMBombModule>().HandleStrike();
-			Start();
+			for(int i = 0; i < sorted.Length; i++)
+				if(sorted[i].type != RideType.RollerCoaster)
+					return sorted[i];
+				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
 		}
+
+		return sorted[0];
 	}
 
-	//Play both sounds and run a cooldown of 3 seconds.
-	IEnumerator PlaySounds(int[] positions)
+	private void PressLeft()
 	{
-		soundsPlaying = true;
-		sound1.clip = sounds[positions[0]];
-		sound2.clip = sounds[positions[1]];
-		sound1.Play();
-		sound2.Play();
-		yield return new WaitForSeconds(3f);
-		soundsPlaying = false;
+		if(!moduleSolved)
+		{
+			leftButton.AddInteractionPunch(0.5f);
+			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+			cycleIndex = cycleIndex == 0 ? 2 : (cycleIndex - 1) % 3;
+			rideScreen.GetComponentInChildren<TextMesh>().text = ridesAvailable[cycleIndex].name;
+		}
+		
 	}
 
+	private void PressRight()
+	{
+		if(!moduleSolved)
+		{
+			rightButton.AddInteractionPunch(0.5f);
+			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+			cycleIndex = (cycleIndex + 1) % 3;
+			rideScreen.GetComponentInChildren<TextMesh>().text = ridesAvailable[cycleIndex].name;
+		}
+		
+	}
+
+	private void PressSubmit()
+	{
+		if(!moduleSolved)
+		{
+			rideScreen.AddInteractionPunch(0.5f);
+			String submitted = rideScreen.GetComponentInChildren<TextMesh>().text;
+			if(submitted.Equals(correctInvestment.name))
+			{
+				Debug.LogFormat("[Amusement Parks #{0}] You invested in the {1}, which was correct. Module solved.", moduleId, submitted);
+				GetComponent<KMBombModule>().HandlePass();
+				Audio.PlaySoundAtTransform("scream", transform);
+				moduleSolved = true;
+			}
+			else
+			{
+				GetComponent<KMBombModule>().HandleStrike();
+				Debug.LogFormat("[Amusement Parks #{0}] You invested in the {1}, which was incorrect. Strike!", moduleId, submitted);
+				Start();
+			}
+		}
+		
+	}
+}
+
+class Fan
+{
+	public String name;
+	public int prefThrill;
+	public int ageGroup;
+	public RideType prefType;
+	public int prefScenery;
+
+	public Fan(String name, int prefThrill, int ageGroup, RideType prefType, int prefScenery)
+	{
+		this.name = name;
+		this.prefThrill = prefThrill;
+		this.ageGroup = ageGroup;
+		this.prefType = prefType;
+		this.prefScenery = prefScenery;
+	}
+}
+class Ride
+{
+	public String name;
+	public int thrillLevel;
+	public int[] suitableAges;
+	public RideType type;
+	public int scenery;
+
+	public int points;
+
+	public Ride(String name, int thrillLevel, int[] suitableAges, RideType type, int scenery)
+	{
+		this.name = name;
+		this.thrillLevel = thrillLevel;
+		this.suitableAges = suitableAges;
+		this.type = type;
+		this.scenery = scenery;
+		points = 0;
+	}
+}
+
+enum RideType
+{
+	RollerCoaster, SmallFlat, LargeFlat, Water, Dark, Other
+}
+	
+/*
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"Play the sounds with “!{0} play”. Set the bit displays with “!{0} set 10101”. Submit with “!{0} submit”. Set and submit with “!{0} set 10101 submit.”";
 #pragma warning restore 414
@@ -429,5 +322,9 @@ public class doubleListeningScript : MonoBehaviour
 		}
 
 		submitButton.OnInteract();
-	}
-}
+	}*/
+	//private Dictionary<String, String[]> preferences = new Dictionary<String, String[]>()
+	//{
+	//	{"James", new String[] {"moderate","adults","water","light"}}, {"Dan", new String[] {"high","young adults","roller coaster","moderate"}}, {"Karen", new String[] {"very low","young children","small flat","heavy"}}, {"Susan", new String[] {"low","adults","large flat","light"}},
+	//	{"Jessics", new String[] {"high","young adults","large flat","light"}}, {"Stephen", new String[] {"low","children","roller coaster","moderate"}}, {"Matt", new String[] {"very low","young children","water","moderate"}}, {"Sarah", new String[] {"moderate","children","dark","heavy"}}
+	//};

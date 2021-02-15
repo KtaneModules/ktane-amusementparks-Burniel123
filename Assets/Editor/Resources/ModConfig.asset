@@ -16,8 +16,18 @@ MonoBehaviour:
   author: Burniel
   description: 'Amusement Parks Pre-Release
 
+    RMC KTANE Confirmed?!
 
-    Tell Burniel he forgot to write the description.'
-  version: pre
+
+    Determine which attraction you should build for the next season at your amusement
+    park.
+
+
+    This module is in BETA. Please get in touch if you have any feedback, suggestions,
+    or issues.
+
+
+    Module idea and implementation by Burniel.'
+  version: beta
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 4102b88e547f426449b1cb528382b6d2, type: 3}
+  previewImage: {fileID: 2800000, guid: 4bbf47c62dd1c56469f42152461f7b25, type: 3}
