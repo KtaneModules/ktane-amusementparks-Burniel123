@@ -14,7 +14,7 @@ MonoBehaviour:
   id: amusementParks
   title: Amusement Parks
   author: Burniel
-  description: 'Amusement Parks Pre-Release
+  description: 'Amusement Parks V1.0.1
 
     RMC KTANE Confirmed?!
 
@@ -23,11 +23,12 @@ MonoBehaviour:
     park.
 
 
-    This module is in BETA. Please get in touch if you have any feedback, suggestions,
-    or issues.
+    Module idea and implementation by Burniel.
 
 
-    Module idea and implementation by Burniel.'
-  version: beta
+    Manual (HTML): found on ktane.timwi.de
+
+    Manual (PDF): https://drive.google.com/drive/folders/1SqZGAfo9KzQ3mD-1GI3DkPACkng1mrVn'
+  version: 1.0
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 4bbf47c62dd1c56469f42152461f7b25, type: 3}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ public class amusementParksScript : MonoBehaviour
 	//Key module variables:
 	private bool moduleSolved = false;
 	private String[] parkNames = {"Cruelton Towers", "Dismay World", "Six Drags", "Cheddar Point", "Global Studios", "Fuji-Q ByeLand", "Trollywood"};
-	private Fan[] fans = new Fan[] {new Fan("James", 3, 4, RideType.Water, 1), new Fan("Dan", 4, 3, RideType.RollerCoaster, 2), new Fan("Karen", 2, 4, RideType.LargeFlat, 3), new Fan("Susan", 2, 4, RideType.LargeFlat, 1),
+	private Fan[] fans = new Fan[] {new Fan("James", 3, 4, RideType.Water, 1), new Fan("Dan", 4, 3, RideType.RollerCoaster, 2), new Fan("Karen", 1, 1, RideType.SmallFlat, 3), new Fan("Susan", 2, 4, RideType.LargeFlat, 1),
 									new Fan("Jessica", 4, 3, RideType.LargeFlat, 1), new Fan("Stephen", 2, 2, RideType.RollerCoaster, 2), new Fan("Matt", 1, 1, RideType.Water, 2), new Fan("Sarah", 3, 2, RideType.Dark, 3)};
 	private Ride[] rides = new Ride[] {new Ride("Carousel", 1, new int[] {1}, RideType.SmallFlat, 2), new Ride("Drop Tower", 4, new int[] {4}, RideType.SmallFlat, 0), new Ride("Enterprise", 4, new int[] {4}, RideType.LargeFlat, 0), new Ride("Ferris Wheel", 2, new int[] {1,2,3,4}, RideType.LargeFlat, 1), new Ride("Ghost Train", 3, new int[] {3}, RideType.Dark, 3),
 									   new Ride("Walkthrough", 1, new int[] {2}, RideType.Other, 2), new Ride("Inverted Coaster", 4, new int[] {4}, RideType.RollerCoaster, 2), new Ride("Junior Coaster", 2, new int[] {2}, RideType.RollerCoaster, 1), new Ride("Launched Coaster", 4, new int[] {3}, RideType.RollerCoaster, 0), new Ride("Log Flume", 2, new int[] {2}, RideType.Water, 2),
@@ -205,70 +206,82 @@ public class amusementParksScript : MonoBehaviour
 		}
 		
 	}
-}
 
-class Fan
-{
-	public String name;
-	public int prefThrill;
-	public int ageGroup;
-	public RideType prefType;
-	public int prefScenery;
-
-	public Fan(String name, int prefThrill, int ageGroup, RideType prefType, int prefScenery)
-	{
-		this.name = name;
-		this.prefThrill = prefThrill;
-		this.ageGroup = ageGroup;
-		this.prefType = prefType;
-		this.prefScenery = prefScenery;
-	}
-}
-class Ride
-{
-	public String name;
-	public int thrillLevel;
-	public int[] suitableAges;
-	public RideType type;
-	public int scenery;
-
-	public int points;
-
-	public Ride(String name, int thrillLevel, int[] suitableAges, RideType type, int scenery)
-	{
-		this.name = name;
-		this.thrillLevel = thrillLevel;
-		this.suitableAges = suitableAges;
-		this.type = type;
-		this.scenery = scenery;
-		points = 0;
-	}
-}
-
-enum RideType
-{
-	RollerCoaster, SmallFlat, LargeFlat, Water, Dark, Other
-}
-	
-/*
-#pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"Play the sounds with “!{0} play”. Set the bit displays with “!{0} set 10101”. Submit with “!{0} submit”. Set and submit with “!{0} set 10101 submit.”";
-#pragma warning restore 414
-
-	//Process command for Twitch Plays - IEnumerator method used due to length of sounds.
+	#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"Move left/right through available attractions with “!{0} press left/right/l/r”. Cycle all attractions with “!{0} cycle”. Submit with “!{0} submit” (submits current attraction) or “!{0} submit x” (submits the attraction named x).";
+	#pragma warning restore 414
+	//Process command for Twitch Plays.
 	IEnumerator ProcessTwitchCommand(String command)
 	{
-		var play = Regex.Match(command,@"^(\s)*(play){1}(\s)*$", RegexOptions.IgnoreCase);
-		var set = Regex.Match(command,@"^\s*(submit|((set\s([0-1]){5})(\ssubmit)?))(\s)*$", RegexOptions.IgnoreCase);
+		//var play = Regex.Match(command,@"^(\s)*(play){1}(\s)*$", RegexOptions.IgnoreCase);
+		//var set = Regex.Match(command,@"^\s*(submit|((set\s([0-1]){5})(\ssubmit)?))(\s)*$", RegexOptions.IgnoreCase);
+		var left = Regex.Match(command,@"^\s*(press)\s*(l(eft)?)\s*$", RegexOptions.IgnoreCase);
+		var right = Regex.Match(command,@"^\s*(press)\s*(r(ight)?)\s*$", RegexOptions.IgnoreCase);
+		var cycle = Regex.Match(command,@"^\s*(cycle)\s*$", RegexOptions.IgnoreCase);
+		var submit = Regex.Match(command,@"^\s*(submit)(\s+([a-z]+))*\s*$", RegexOptions.IgnoreCase);
+
+		//if(!(left.Success || right.Success || cycle.Success || submit.Success))
+		//	yield break;
 		
-		if(!(play.Success || set.Success))
-			yield break;
-		
-		if(play.Success)
+		if(left.Success)
 		{
 			yield return null;
-			playButton.OnInteract();
+			yield return leftButton;
 		}
+		else if(right.Success)
+		{
+			yield return null;
+			yield return rightButton;
+		}
+		else if(cycle.Success)
+		{
+			yield return null;
+			for(int i = 0; i < 3; i++)
+			{
+				yield return "trycancel";
+				yield return new WaitForSeconds(1.25f);
+				yield return rightButton;
+				yield return rightButton;
+			}
+		}
+		else if(submit.Success)
+		{
+			if(command.ToLowerInvariant().Trim().Equals("submit"))
+			{
+				yield return null;
+				yield return rideScreen;
+			}
+			else
+			{
+				String submitted = command.ToLowerInvariant().Trim().Substring(6).Trim();
+				Debug.Log(submitted);
+				for(int i = 0; i < 3; i++)
+				{
+					Debug.Log(rideScreen.GetComponentInChildren<TextMesh>().text.ToLowerInvariant());
+					if(rideScreen.GetComponentInChildren<TextMesh>().text.ToLowerInvariant().Equals(submitted))
+					{
+						yield return null;
+						yield return rideScreen;
+						break;
+					}
+					else
+					{
+						yield return null;
+						yield return rightButton;
+						yield return rightButton;
+						//yield return new WaitForSeconds(1f);
+						//if(i == 2) yield return "sendtochaterror {no such attraction available!}";
+					}
+				}
+			}
+
+			//String submitted = submit.Groups[].Value.ToLowerInvariant();
+			//Debug.Log(submitted);
+		}
+
+		yield break;
+	}
+/*
 		else if(command.ToLower().Contains("set"))
 		{
 			String valuesEntered = set.Groups[3].Value.ToLowerInvariant().Trim().Substring(4);
@@ -323,8 +336,47 @@ enum RideType
 
 		submitButton.OnInteract();
 	}*/
-	//private Dictionary<String, String[]> preferences = new Dictionary<String, String[]>()
-	//{
-	//	{"James", new String[] {"moderate","adults","water","light"}}, {"Dan", new String[] {"high","young adults","roller coaster","moderate"}}, {"Karen", new String[] {"very low","young children","small flat","heavy"}}, {"Susan", new String[] {"low","adults","large flat","light"}},
-	//	{"Jessics", new String[] {"high","young adults","large flat","light"}}, {"Stephen", new String[] {"low","children","roller coaster","moderate"}}, {"Matt", new String[] {"very low","young children","water","moderate"}}, {"Sarah", new String[] {"moderate","children","dark","heavy"}}
-	//};
+}
+
+class Fan
+{
+	public String name;
+	public int prefThrill;
+	public int ageGroup;
+	public RideType prefType;
+	public int prefScenery;
+
+	public Fan(String name, int prefThrill, int ageGroup, RideType prefType, int prefScenery)
+	{
+		this.name = name;
+		this.prefThrill = prefThrill;
+		this.ageGroup = ageGroup;
+		this.prefType = prefType;
+		this.prefScenery = prefScenery;
+	}
+}
+class Ride
+{
+	public String name;
+	public int thrillLevel;
+	public int[] suitableAges;
+	public RideType type;
+	public int scenery;
+
+	public int points;
+
+	public Ride(String name, int thrillLevel, int[] suitableAges, RideType type, int scenery)
+	{
+		this.name = name;
+		this.thrillLevel = thrillLevel;
+		this.suitableAges = suitableAges;
+		this.type = type;
+		this.scenery = scenery;
+		points = 0;
+	}
+}
+
+enum RideType
+{
+	RollerCoaster, SmallFlat, LargeFlat, Water, Dark, Other
+}

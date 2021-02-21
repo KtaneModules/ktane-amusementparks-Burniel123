@@ -3,6 +3,7 @@
 
 A module for “Keep Talking and Nobody Explodes”. Designed and implemented by me using the KTANE Modkit.
 
-Currently under development, beta testing expected by Christmas 2020.
-
 ---
+## Release History:
+
+2021-02-20: Amusement Parks released!
