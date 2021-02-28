@@ -77,23 +77,17 @@ public class amusementParksScript : MonoBehaviour
 
 	private Ride[] CalculatePoints(Fan[] fans, Ride[] rides)
 	{
-		int serialNumSum = Bomb.GetSerialNumberNumbers().Sum();
-		int numPlates = Bomb.GetPortPlates().Count();
-
 		for(int i = 0; i < rides.Length; i++)
 			rides[i].points = 0;
 
 		for(int i = 0; i < 3; i++)
-		{//Iterate each fan.
-			int bioNumber = (new List<Fan>(this.fans)).IndexOf(fans[i]) + 1;
-			
-			int addAmt = serialNumSum % bioNumber == 0 ? numPlates : 1;
+		{//Iterate each fan.			
+			int addAmt = Bomb.GetSerialNumberLetters().Any(s => fans[i].name.Contains(s)) ? 2 : 1;
 			int pointsAdded = 0;
 
-			if(serialNumSum % bioNumber == 0)
+			if(addAmt > 1)
 			{
-				addAmt = numPlates;
-				Debug.LogFormat("[Amusement Parks #{0}] Serial digits rule applies for {1}!", moduleId, fans[i].name);
+				Debug.LogFormat("[Amusement Parks #{0}] Serial letters rule applies for {1}!", moduleId, fans[i].name);
 			}
 
 			for(int j = 0; j < rides.Length; j++)
@@ -213,16 +207,11 @@ public class amusementParksScript : MonoBehaviour
 	//Process command for Twitch Plays.
 	IEnumerator ProcessTwitchCommand(String command)
 	{
-		//var play = Regex.Match(command,@"^(\s)*(play){1}(\s)*$", RegexOptions.IgnoreCase);
-		//var set = Regex.Match(command,@"^\s*(submit|((set\s([0-1]){5})(\ssubmit)?))(\s)*$", RegexOptions.IgnoreCase);
 		var left = Regex.Match(command,@"^\s*(press)\s*(l(eft)?)\s*$", RegexOptions.IgnoreCase);
 		var right = Regex.Match(command,@"^\s*(press)\s*(r(ight)?)\s*$", RegexOptions.IgnoreCase);
 		var cycle = Regex.Match(command,@"^\s*(cycle)\s*$", RegexOptions.IgnoreCase);
 		var submit = Regex.Match(command,@"^\s*(submit)(\s+([a-z]+))*\s*$", RegexOptions.IgnoreCase);
 
-		//if(!(left.Success || right.Success || cycle.Success || submit.Success))
-		//	yield break;
-		
 		if(left.Success)
 		{
 			yield return null;
@@ -269,73 +258,13 @@ public class amusementParksScript : MonoBehaviour
 						yield return null;
 						yield return rightButton;
 						yield return rightButton;
-						//yield return new WaitForSeconds(1f);
-						//if(i == 2) yield return "sendtochaterror {no such attraction available!}";
 					}
 				}
 			}
-
-			//String submitted = submit.Groups[].Value.ToLowerInvariant();
-			//Debug.Log(submitted);
 		}
 
 		yield break;
 	}
-/*
-		else if(command.ToLower().Contains("set"))
-		{
-			String valuesEntered = set.Groups[3].Value.ToLowerInvariant().Trim().Substring(4);
-			for(int i = 0; i < valuesEntered.Length; i++)
-			{
-				if(valuesEntered[i] == '1' && bitDisplays[i].GetComponentInChildren<TextMesh>().text.Contains("0"))
-				{
-					yield return null;
-					upArrows[i].OnInteract();
-					yield return new WaitForSeconds(.05f);
-				}
-				else if(valuesEntered[i] == '0' && bitDisplays[i].GetComponentInChildren<TextMesh>().text.Contains("1"))
-				{
-					yield return null;
-					downArrows[i].OnInteract();
-					yield return new WaitForSeconds(.05f);
-				}
-			}
-		}
-
-		if(command.ToLower().Contains("submit"))
-		{
-			yield return null;
-			submitButton.OnInteract();
-		}
-	}
-
-	//Calls a coroutine to autosolve the module when a TP admin does !<id> solve.
-	void TwitchHandleForcedSolve()
-	{
-		if(moduleSolved) return;
-		StartCoroutine(HandleForcedSolve());
-	}
-
-	IEnumerator HandleForcedSolve()
-	{
-		yield return null;
-		Debug.Log(solution);
-		for(int i = 0; i < solution.Length; i++)
-		{
-			if(solution[i] == '1')
-			{
-				upArrows[i].OnInteract();
-				yield return new WaitForSeconds(0.2f);
-			}
-			else
-			{
-				downArrows[i].OnInteract();
-				yield return new WaitForSeconds(0.2f);
-			}
-		}
-
-		submitButton.OnInteract();
-	}*/
 }
 
 class Fan

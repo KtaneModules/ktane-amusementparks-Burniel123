@@ -6,4 +6,5 @@ A module for “Keep Talking and Nobody Explodes”. Designed and implemented by
 ---
 ## Release History:
 
+2021-02-28: V1.1 - Slight rule adjustments and manual tweaks.
 2021-02-20: Amusement Parks released!
