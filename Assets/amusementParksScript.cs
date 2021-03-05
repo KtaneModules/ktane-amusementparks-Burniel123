@@ -82,7 +82,7 @@ public class amusementParksScript : MonoBehaviour
 
 		for(int i = 0; i < 3; i++)
 		{//Iterate each fan.			
-			int addAmt = Bomb.GetSerialNumberLetters().Any(s => fans[i].name.Contains(s)) ? 2 : 1;
+			int addAmt = Bomb.GetSerialNumberLetters().Any(s => fans[i].name.ToUpper().Contains(Char.ToUpper(s))) ? 2 : 1;
 			int pointsAdded = 0;
 
 			if(addAmt > 1)
