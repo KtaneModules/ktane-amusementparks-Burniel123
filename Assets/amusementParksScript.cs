@@ -122,7 +122,7 @@ public class amusementParksScript : MonoBehaviour
 		if(park.Equals("Dismay World"))
 		{
 			for(int i = 0; i < sorted.Length; i++)
-				if(!sorted[i].suitableAges.Equals(new int[] {4}))
+				if(!Enumerable.SequenceEqual(sorted[i].suitableAges, new int[] {4}))
 					return sorted[i];
 				else Debug.LogFormat("[Amusement Parks #{0}] Due to park-based restrictions, you cannot install the {1}.", moduleId, sorted[i].name);
 		}
